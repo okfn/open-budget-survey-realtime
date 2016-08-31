@@ -139,6 +139,46 @@ router.get('/status/:country', function (req, res) {
         break;
       }
     }
+    country.snapshots = _.sortBy(country.snapshots, function(obj) {
+	return -obj.date;
+    });
+
+    // Override country if needed (e.g. discontinued countries)
+    if (country.country in country_override) {
+	var documents = _.indexBy(_.pluck(docs, 'title'));
+        documents = _.mapObject(documents, function(value){
+          return country_override[country.country].value;
+        });
+	var this_year = ''+(new Date).getFullYear();
+        var overwritten = {};
+        overwritten[this_year] = documents;
+	country.snapshots = _.map(country.snapshots, function(obj) {
+            if (new Date(obj.date) > country_override[country.country].date) {
+		obj.snapshot = overwritten;
+	    }
+	    return obj;
+	});
+        country.message = country_override[country.country].message;
+    }
+
+    res.render('country_embed', {
+      'docs': docs,
+      'country': country,
+      'EXPLORER_URL': process.env.EXPLORER_URL
+    });
+  });
+});
+
+
+router.get('/status/:country', function (req, res) {
+  api.call('countries', function (countries) {
+    var country = {};
+    for (var i in countries) {
+      if (countries[i].country == req.params.country) {
+        country = countries[i];
+        break;
+      }
+    }
 
     // Override country if needed (e.g. discontinued countries)
     if (country.country in country_override) {
@@ -295,10 +335,11 @@ router.get('/locale/:locale/embed', function (req, res) {
     res.redirect('/embed');
 });
 
+
 router.get('/', function (req, res) {
   api.call('countries', function (countries, last_update) {
     //Override countries (e.g. discontinued countries)
-    countries = _.map(countries, function(obj) {
+    countries = _.map(indaba, function(obj) {
       if (obj.country in country_override) {
         var documents = _.indexBy(_.pluck(docs, 'title'));
         documents = _.mapObject(documents, function(value){

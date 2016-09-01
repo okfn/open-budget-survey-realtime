@@ -34,7 +34,7 @@
     "imagemin-pngquant": "^5.0.0",
     "moment": "2.8.1",
     "morgan": "~1.0.0",
-    "open-budget-indaba-client": "git+https://github.com/keitaroinc/open-budget-indaba-client.git#b60830eebbee13cdcc8f6998c43d0c9857b616a7",
+    "open-budget-indaba-client": "git+https://github.com/okfn/open-budget-indaba-client.git",
     "request": "~2.39.0",
     "swig": "~1.4.2",
     "underscore": "~1.8.3"

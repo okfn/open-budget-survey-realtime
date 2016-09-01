@@ -5,7 +5,6 @@ var moment = require('moment');
 var api = require('./../api.js');
 var _ = require('underscore');
 var router = express.Router();
-var indaba = require('./../cache/Indaba_compiled.json')
 
 var docs = [
   {
@@ -134,9 +133,9 @@ router.get('/country/:country/embed', function (req, res) {
 router.get('/status/:country', function (req, res) {
   api.call('countries', function (countries) {
     var country = {};
-    for (var i in indaba) {
-      if (indaba[i].country == req.params.country) {
-        country = indaba[i];
+    for (var i in countries) {
+      if (countries[i].country == req.params.country) {
+        country = countries[i];
         break;
       }
     }
@@ -312,7 +311,7 @@ router.get('/', function (req, res) {
     }
 
     //Override countries (e.g. discontinued countries)
-    countries = _.map(indaba, function(obj) {
+    countries = _.map(countries, function(obj) {
       if (obj.country in country_override) {
         var documents = _.indexBy(_.pluck(docs, 'title'));
         documents = _.mapObject(documents, function(value){

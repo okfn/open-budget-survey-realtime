@@ -57,7 +57,7 @@
               {% for country in countries %}
                 {% set code = country.code|lower %}
                 <tr>
-                  <td><a target="_blank" href="/status/{{ country.country }}/embed">{{ gettext(country.country) }}</a></td>
+                  <td><a href="/status/{{ country.country }}/embed">{{ gettext(country.country) }}</a></td>
                   {% if country.obi_scores %}
                     <td class="text-center" data-toggle="popover" data-content="From {{ country.obi_scores|last.year }}">
                       {{ country.obi_scores|last.score }}
@@ -85,7 +85,7 @@
                       {% endif %}
                       <td class="text-center" data-toggle="popover" data-content="{{ h.tooltip(country, cell) }}">
                         {% if parentId %}
-                          <a href="https://drive.google.com/drive/folders/{{ parentId }}">
+                          <a target="_blank" href="https://drive.google.com/drive/folders/{{ parentId }}">
                         {% endif %}
                         <span class="badge state state-{{ cell.state|replace(' ', '-') }}">
                           <span>{{ h.state(cell.state) }}</span>

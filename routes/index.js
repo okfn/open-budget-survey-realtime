@@ -284,6 +284,12 @@ router.get('/about', function (req, res) {
   res.render('about', {});
 });
 
+router.get('/about/embed', function (req, res) {
+  res.render('about_embed', {
+    'EXPLORER_URL': process.env.EXPLORER_URL
+  });
+});
+
 router.get('/data.csv', function (req, res) {
     // Generate header row
     var csv = "";

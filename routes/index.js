@@ -278,9 +278,7 @@ router.get('/status/:country/embed', function (req, res) {
           docIds.push(folder)
         }
       });
-
-      console.log(docIds)
-
+      
       res.render('status_embed', {
         'docs': docs,
         'country': country,

@@ -46,7 +46,6 @@ function getGDriveFolders(file, callback) {
           if (splitted[1].toUpperCase() === 'IN-YEAR REPORTS') {
             splitted[1] = 'In-Year Report';
             folder[0] = splitted.join('/');
-            console.log(folder[0])
           }
         }
       });

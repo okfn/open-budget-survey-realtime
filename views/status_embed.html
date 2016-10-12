@@ -55,21 +55,17 @@
 <h2>{{ gettext("Current Status") }}</h2>
 <table class="table table-hover status-table">
   <colgroup>
-    <col width="22%">
-    <col width="10%">
-    <col width="18%">
-    <col width="4%">
-    <col width="16%">
-    <col width="30%">
+    <col width="20%">
+    <col width="5%">
+    <col width="15%">
+    <col width="60%">
   </colgroup>
   <thead>
     <tr>
       <th>{{ gettext("Document") }}</th>
       <th>{{ gettext("Fiscal Year") }}</th>
       <th>{{ gettext("Current Status") }}</th>
-      <th>{{ gettext("Comments") }}</th>
       <th>{{ gettext("Date of Publication") }}</th>
-      <th><span class="text-muted">{{ gettext("Next Publishing Period") }}</span></th>
     </tr>
   </thead>
   <tbody>
@@ -125,24 +121,6 @@
           <span>{{ h.state("not produced") }}</span>
         </span>
         {{ h.state("not produced") }}
-	{% endif %}
-      </td>
-      <td class="text-center">
-	{% if cell.comments %}
-	<span data-toggle="popover" data-placement="top" data-content="{{ cell.comments }}" class="text-info glyphicon glyphicon-comment"></span>
-	{% endif %}
-      </td>
-      <td>
-	{% if cell %}
-        {% if cell.date_published %}
-          {{ date_format(Date.parse(cell.date_published), 'll') }}
-        {% else %}
-        <span class="text-muted">
-          {{ gettext("Unavailable") }}
-        </span>
-        {% endif %}
-	{% else %}
-        <span class="text-muted">{{ gettext("Unavailable") }}</span>
 	{% endif %}
       </td>
       <td>

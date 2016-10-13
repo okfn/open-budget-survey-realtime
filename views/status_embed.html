@@ -12,7 +12,7 @@
     <div class="alert alert-danger">{{ gettext(country.message) }}</div>
     {% endif %}
     <div>
-      <h2>{{ gettext("Open Budget Index") }} <small><a href="/about"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></small></h2>
+      <h2>{{ gettext("Open Budget Index") }} <small><a href="/about/embed"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></small></h2>
       {% if country.obi_scores %}
       {% set lastscore = country.obi_scores|last %}
       <p>
@@ -46,33 +46,34 @@
     <div class="row top5">
       <a href="/country/{{ country.country }}/embed" class="btn btn-primary col-md-12">{{ gettext("View historical information") }}</a>
     </div>
+    <div class="row top5">
+      <a href="/embed" class="btn btn-primary col-md-12">{{ gettext("View all countries") }}</a>
+    </div>
   </div>
 </div>
 
 <h2>{{ gettext("Current Status") }}</h2>
 <table class="table table-hover status-table">
   <colgroup>
-    <col width="22%">
-    <col width="10%">
-    <col width="18%">
-    <col width="4%">
-    <col width="16%">
-    <col width="30%">
+    <col width="20%">
+    <col width="5%">
+    <col width="17%">
+    <col width="58%">
   </colgroup>
   <thead>
     <tr>
       <th>{{ gettext("Document") }}</th>
       <th>{{ gettext("Fiscal Year") }}</th>
       <th>{{ gettext("Current Status") }}</th>
-      <th>{{ gettext("Comments") }}</th>
       <th>{{ gettext("Date of Publication") }}</th>
-      <th><span class="text-muted">{{ gettext("Next Publishing Period") }}</span></th>
     </tr>
   </thead>
   <tbody>
     {% for doc in docs %}
       {% set cell = undefined %}
+      {% set driveLink = undefined %}
       {% set fiscal_year = '-' %}
+      {% set documentTitle = doc.title %}
       {% for year in country.documents|reverse %}
         {% if not cell %}
           {% if doc.title in country.documents[year] %}
@@ -80,10 +81,19 @@
             {% set cell = country.documents[year][doc.title]|first %}
           {% endif %}
         {% endif %}
-      {% endfor %}
+        {% for driveId in drive %}
+          {% if [country.country, documentTitle] | join('/') == driveId[0] %}
+            {% set driveLink = "https://drive.google.com/drive/folders/" + driveId[1] %}
+          {% endif %}
+        {% endfor %}
+    {% endfor %}
     <tr>
       <th scope="row" data-toggle="popover" data-placement="top" data-content="{{ gettext(doc.description) }}"{% if lang == 'es' %} style="font-size:90%;"{% endif %}{% if lang == 'ru' %} style="font-size:70%;"{% endif %}>
-        {{ gettext(doc.title) }}
+        {% if driveLink %}
+          <a href="{{ driveLink }}" target="_blank">{{ gettext(doc.title) }}</a>
+        {% else %}
+          {{ gettext(doc.title) }}
+        {% endif %}
       </th>
       <td class="text-center">{{ date_format({'year':fiscal_year}, 'YYYY') }}</td>
       <td>
@@ -111,24 +121,6 @@
           <span>{{ h.state("not produced") }}</span>
         </span>
         {{ h.state("not produced") }}
-	{% endif %}
-      </td>
-      <td class="text-center">
-	{% if cell.comments %}
-	<span data-toggle="popover" data-placement="top" data-content="{{ cell.comments }}" class="text-info glyphicon glyphicon-comment"></span>
-	{% endif %}
-      </td>
-      <td>
-	{% if cell %}
-        {% if cell.date_published %}
-          {{ date_format(Date.parse(cell.date_published), 'll') }}
-        {% else %}
-        <span class="text-muted">
-          {{ gettext("Unavailable") }}
-        </span>
-        {% endif %}
-	{% else %}
-        <span class="text-muted">{{ gettext("Unavailable") }}</span>
 	{% endif %}
       </td>
       <td>

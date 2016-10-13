@@ -52,6 +52,10 @@ var country_override = {
     }
 };
 
+var country_drive_name = {
+
+}
+
 router.get('/country/:country', function (req, res) {
   api.call('countries', function (countries) {
     var country = {};
@@ -240,30 +244,47 @@ router.get('/status/:country', function (req, res) {
 
 router.get('/status/:country/embed', function (req, res) {
   api.call('countries', function (countries) {
-    var country = {};
-    for (var i in countries) {
-      if (countries[i].country == req.params.country) {
-        country = countries[i];
-        break;
+    api.driveFolders('gdrive', function (driveFolders) {
+      var country = {};
+      for (var i in countries) {
+        if (countries[i].country == req.params.country) {
+          country = countries[i];
+          break;
+        }
       }
-    }
 
-    // Override country if needed (e.g. discontinued countries)
-    if (country.country in country_override) {
-      var documents = _.indexBy(_.pluck(docs, 'title'));
-      documents = _.mapObject(documents, function(value){
-        return country_override[country.country].value;
+      // Override country if needed (e.g. discontinued countries)
+      if (country.country in country_override) {
+        var documents = _.indexBy(_.pluck(docs, 'title'));
+        documents = _.mapObject(documents, function(value){
+          return country_override[country.country].value;
+        });
+        var this_year = ''+(new Date).getFullYear();
+        country.documents = {};
+        country.documents[this_year] = documents;
+        country.message = country_override[country.country].message;
+      }
+
+      var docIds = [];
+      _.forEach(driveFolders.values, function (folder) {
+        var id = _.find(docs, function (document) {
+          //For some reason or not some filenames contain extra whitespace
+          //at the end
+          if (folder[0] == req.params.country + '/' + document.title) {
+            return true
+          }
+        })
+        if (id) {
+          docIds.push(folder)
+        }
       });
-      var this_year = ''+(new Date).getFullYear();
-      country.documents = {};
-      country.documents[this_year] = documents;
-      country.message = country_override[country.country].message;
-    }
-
-    res.render('status_embed', {
-      'docs': docs,
-      'country': country,
-      'EXPLORER_URL': process.env.EXPLORER_URL
+      
+      res.render('status_embed', {
+        'docs': docs,
+        'country': country,
+        'drive': docIds,
+        'EXPLORER_URL': process.env.EXPLORER_URL
+      });
     });
   });
 });
@@ -282,6 +303,12 @@ router.get('/press', function (req, res) {
 
 router.get('/about', function (req, res) {
   res.render('about', {});
+});
+
+router.get('/about/embed', function (req, res) {
+  res.render('about_embed', {
+    'EXPLORER_URL': process.env.EXPLORER_URL
+  });
 });
 
 router.get('/data.csv', function (req, res) {
